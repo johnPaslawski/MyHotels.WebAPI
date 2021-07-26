@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyHotels.WebAPI.EFData;
+using MyHotels.WebAPI.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,9 @@ namespace MyHotels.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // UnitOfWork
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+
             //tutaj ustalamy z jakim rodzajem serwera bazodanowego chcemy sie ³¹czyæ i w jaki sposób
             services.AddDbContext<MyHotelsDBContext>(x => x.UseSqlServer(Configuration.GetConnectionString("MssqlConnection")));
             services.AddControllers();
