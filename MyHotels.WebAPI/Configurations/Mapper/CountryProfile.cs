@@ -12,6 +12,8 @@ namespace MyHotels.WebAPI.Configurations.Mapper
     {
         public CountryProfile()
         {
+            // ReverseMap umożliwia także mapowanie w drugą stronę, bez tego przy próbie mapowania innej niż 
+            // zadkeklarowana <T, T2> dostalibyśmy błąd
             CreateMap<Country, CreateCountryDto>().ReverseMap();
             CreateMap<Country, UpdateCountryDto>().ReverseMap();
             CreateMap<Country, CountryDto>().ReverseMap();

@@ -12,6 +12,8 @@ namespace MyHotels.WebAPI.Configurations.Mapper
     {
         public HotelProfile()
         {
+            // ReverseMap umożliwia także mapowanie w drugą stronę, bez tego przy próbie mapowania innej niż 
+            // zadkeklarowana <T, T2> dostalibyśmy błąd
             CreateMap<Hotel, CreateHotelDto>().ReverseMap();
             CreateMap<Hotel, UpdateHotelDto>().ReverseMap();
             CreateMap<Hotel, HotelDto>().ReverseMap();

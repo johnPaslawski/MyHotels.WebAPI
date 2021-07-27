@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -58,7 +59,7 @@ namespace MyHotels.WebAPI.Controllers
         }
 
         // GET ... api/countries/1
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetCountry")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -85,6 +86,38 @@ namespace MyHotels.WebAPI.Controllers
 
                 //return StatusCode(StatusCodes.Status500InternalServerError,
                 //    "Internal server error, please try again later...");
+
+                return Problem("Internal server error, please try again later...");
+            }
+        }
+
+        // POST ... api/countries
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateCountry([FromBody] CreateCountryDto countryDto)
+        {
+            _logger.LogInformation($"{nameof(CreateCountry)} called...");
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"Invalid POST attempt in {nameof(CreateCountry)}");
+
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var country = _mapper.Map<Country>(countryDto);
+                await _uow.Countries.Add(country);
+                await _uow.Save();
+
+                return CreatedAtRoute("GetCountry", new { id = country.Id }, country);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"Something went wrong in {nameof(CreateCountry)}");
 
                 return Problem("Internal server error, please try again later...");
             }
