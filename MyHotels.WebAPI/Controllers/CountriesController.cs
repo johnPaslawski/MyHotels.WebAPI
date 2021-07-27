@@ -35,7 +35,7 @@ namespace MyHotels.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IList<CountryDto>>> GetCountries()
         {
-            _logger.LogInformation($"{nameof(GetCountries)} called...");
+            _logger.LogInformation($"janek: {nameof(GetCountries)} called...");
 
             try
             {
@@ -46,26 +46,26 @@ namespace MyHotels.WebAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Something went wrong in {nameof(GetCountries)}");
+                _logger.LogError(exception, $"janek: Something went wrong in {nameof(GetCountries)}");
 
                 // jeżeli problem nie jest dostępny w postaci standardowej metody,
                 // sami dodajemy info użytkownika:
                 //return StatusCode(StatusCodes.Status500InternalServerError,
                 //    "Internal server error, please try again later...");
 
-                return Problem("Diffrent server error, please try again later OR FIX IT...");
+                return Problem("janek: Diffrent server error, please try again later OR FIX IT...");
             }
 
         }
 
         // GET ... api/countries/1
-        [HttpGet("{id}", Name = "GetCountry")]
+        [HttpGet("{id:int}", Name = "GetCountry")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<CountryDto>> GetCountry(int id)
         {
-            _logger.LogInformation($"{nameof(GetCountry)} called...");
+            _logger.LogInformation($"janek: {nameof(GetCountry)} called...");
 
             try
             {
@@ -82,12 +82,12 @@ namespace MyHotels.WebAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Something went wrong in {nameof(GetCountry)}");
+                _logger.LogError(exception, $"janek: Something went wrong in {nameof(GetCountry)}");
 
                 //return StatusCode(StatusCodes.Status500InternalServerError,
                 //    "Internal server error, please try again later...");
 
-                return Problem("Internal server error, please try again later...");
+                return Problem("janek: Internal server error, please try again later...");
             }
         }
 
@@ -98,11 +98,11 @@ namespace MyHotels.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCountry([FromBody] CreateCountryDto countryDto)
         {
-            _logger.LogInformation($"{nameof(CreateCountry)} called...");
+            _logger.LogInformation($"janek:  {nameof(CreateCountry)} called...");
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError($"Invalid POST attempt in {nameof(CreateCountry)}");
+                _logger.LogError($"janek: Invalid POST attempt in {nameof(CreateCountry)}");
 
                 return BadRequest(ModelState);
             }
@@ -117,10 +117,56 @@ namespace MyHotels.WebAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Something went wrong in {nameof(CreateCountry)}");
+                _logger.LogError(exception, $"janek: Something went wrong in {nameof(CreateCountry)}");
 
-                return Problem("Internal server error, please try again later...");
+                return Problem("janek: Internal server error, please try again later...");
             }
         }
+
+        // PUT ... api/countries/1
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateCountry(int id, [FromBody] UpdateCountryDto countryDto)
+        {
+            _logger.LogInformation($"janek: {nameof(UpdateCountry)} called...");
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"janek: ech.. Invalid PUT attempt in {nameof(UpdateCountry)}");
+
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                //najpier trzeba miec obiekt ktory bedziemy aktualizowali, z bazy:
+                var country = await _uow.Countries.Get(x => x.Id == id);
+                //jeśli go nie ma:
+                if (country == null)
+                {
+                    return BadRequest("Z jakiegoś powodu nie znaleziono obiektu o żądanym id");
+                }
+
+                //jeżeli mamy nasz obiekt pobrany z bazy i nasze Dto które zostało przkazane,
+                //możemy te dwie rzeczy połączyć w całość, trochę inaczej niż ostatnio:
+
+                _mapper.Map(countryDto, country);
+                //musimy przekazać nowy stan tego obiektu: 
+                _uow.Countries.Modify(country);
+                await _uow.Save();
+
+                return NoContent();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"janek: Something went wrong in {nameof(UpdateCountry)}");
+
+                return Problem("janek: Internal server error, please try again later...");
+            }
+        }
+
+        
     }
 }
