@@ -167,6 +167,44 @@ namespace MyHotels.WebAPI.Controllers
             }
         }
 
-        
+        // PUT ... api/countries/1
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteCountry(int id)
+        {
+            _logger.LogInformation($"janek: {nameof(DeleteCountry)} called...");
+
+            if (id < 1)
+            {
+                _logger.LogError($"invalid id value in attempt in {nameof(DeleteCountry)}");
+
+                return BadRequest("co robisz gościu, id nie może być mniejsze od zera");
+            }
+
+            try
+            {
+                var country = await _uow.Countries.Get(c => c.Id == id);
+
+                if (country == null)
+                {
+                    return NotFound($"janek: There is no country with id = {id}");
+                }
+
+                await _uow.Countries.Remove(id);
+                await _uow.Save();
+
+                return NoContent();
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"janek: Something went wrong in {nameof(DeleteCountry)}");
+
+                return Problem("janek: Internal server error, please try again later...");
+            }
+        }
     }
 }
