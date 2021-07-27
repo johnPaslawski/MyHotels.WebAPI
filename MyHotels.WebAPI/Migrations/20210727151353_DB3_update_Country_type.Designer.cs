@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyHotels.WebAPI.EFData;
 
 namespace MyHotels.WebAPI.Migrations
 {
     [DbContext(typeof(MyHotelsDBContext))]
-    partial class MyHotelsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210727151353_DB3_update_Country_type")]
+    partial class DB3_update_Country_type
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
