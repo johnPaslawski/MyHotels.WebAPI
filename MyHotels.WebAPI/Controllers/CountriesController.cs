@@ -58,7 +58,7 @@ namespace MyHotels.WebAPI.Controllers
 
         }
 
-        // GET ... api/countries/1
+        // GET ... api/countries/{id:int}
         [HttpGet("{id:int}", Name = "GetCountry")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
